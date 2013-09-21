@@ -1,0 +1,2 @@
+default: --tags ~@wip --tags ~@online --require features --format pretty
+online: --tags @online --require features --format pretty
