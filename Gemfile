@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+gem 'capybara'
+gem 'poltergeist'
 gem 'rake'
 
 group :development do
@@ -11,4 +13,6 @@ end
 group :test do
   gem 'cucumber'
   gem 'rspec'
+  gem 'sinatra'
+  gem 'childprocess'
 end

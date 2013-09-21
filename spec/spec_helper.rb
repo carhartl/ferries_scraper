@@ -1,0 +1,1 @@
+require 'ferries_scraper'
