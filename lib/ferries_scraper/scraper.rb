@@ -5,11 +5,11 @@ module FerriesScraper
 
     attr_reader :strategy
 
-    def initialize(options, strategy = CapybaraEngine.new)
+    def initialize(options)
       unless AVAILABLE_DEPARTURE_CITIES.include?(options[:departure])
         raise ArgumentError.new('Desired city not supported')
       end
-      @strategy  = strategy
+      @strategy  = options[:strategy] || CapybaraEngine.new
       @departure = options[:departure]
     end
 
