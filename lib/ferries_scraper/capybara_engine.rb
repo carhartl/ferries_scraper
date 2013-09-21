@@ -20,17 +20,17 @@ module FerriesScraper
   class CapybaraEngine
     include Capybara::DSL
 
-    def scrape(url)
-      @results ||= query_results(url)
+    def scrape(url, options)
+      @results ||= query_results(url, options)
     end
 
     private
 
-    def query_results(url)
+    def query_results(url, options)
       visit url
-      fill_in_date
-      choose_time
-      choose_age
+      fill_in_date(date_formatted(options[:date]))
+      choose_time(options[:time])
+      choose_age(options[:age])
       choose_vehicle
       submit_form
       wait_for_results
@@ -40,20 +40,20 @@ module FerriesScraper
       puts "The site's HTML probably has changed: #{e}"
     end
 
-    def fill_in_date
+    def fill_in_date(date)
       # Make sure the element is on the page, before we access it via JavaScript
       find 'input[name=cal_out]'
       # Capybara's `fill_in` won't work with readonly inputs
-      page.execute_script %{ document.querySelector('input[name=cal_out]').value = '#{days_in_advance_from_today(3)}'; }
+      page.execute_script %{ document.querySelector('input[name=cal_out]').value = '#{date}'; }
     end
 
-    def choose_time
+    def choose_time(time)
       # By submitting once when necessary we get to time we want to enter
-      submit_form unless has_desired_time?
-      select '12:00', from: 'ddOutTime'
+      submit_form unless has_desired_time?(time)
+      select "#{time}:00", from: 'ddOutTime'
     end
 
-    def choose_age(age = '18+')
+    def choose_age(age)
       select age, from: 'passengerAges_Age1_ddlAges'
     end
 
@@ -68,8 +68,8 @@ module FerriesScraper
       click_button 'butSubmit'
     end
 
-    def has_desired_time?
-      page.has_css?('#ddOutTime option[value="12"]')
+    def has_desired_time?(time)
+      page.has_css?("#ddOutTime option[value='#{time}']")
     end
 
     def wait_for_results
@@ -102,8 +102,8 @@ module FerriesScraper
       text.gsub(/\A[^:]+:/, '').gsub(/@/, '').gsub(/\s+/, ' ').strip
     end
 
-    def days_in_advance_from_today(amount = 3)
-      (Time.now.to_date + amount).strftime('%e %B %Y').strip
+    def date_formatted(date)
+      date.strftime('%e %B %Y').strip
     end
   end
 end

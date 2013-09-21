@@ -42,7 +42,10 @@ describe FerriesScraper::Scraper do
     it "scrapes the correct url for the given departure city" do
       FerriesScraper::Scraper::ROUTE_RFIDS.each do |city, id|
         scraper = FerriesScraper::Scraper.new(departure: "#{city}", strategy: strategy)
-        strategy.should_receive(:scrape).with("/ferry/secure/multi_price_detail.aspx?stdc=DF10&grid=0&rfid=#{id}&psgr=1&curr=2&retn=False&rfidr=0")
+        strategy.should_receive(:scrape).with(
+          "/ferry/secure/multi_price_detail.aspx?stdc=DF10&grid=0&rfid=#{id}&psgr=1&curr=2&retn=False&rfidr=0",
+          instance_of(Hash)
+        )
         scraper.scrape
       end
     end

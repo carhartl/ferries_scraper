@@ -2,19 +2,25 @@ module FerriesScraper
   class Scraper
     AVAILABLE_DEPARTURE_CITIES = %w( Dublin Liverpool ).freeze
     ROUTE_RFIDS = { Dublin: 18, Liverpool: 66 }.freeze
+    DEFAULT_CONFIGURATION = {
+      date: Time.now.to_date + 3,
+      time: 12,
+      age:  '18+',
+    }.freeze
 
+    attr_reader :configuration
     attr_reader :strategy
 
-    def initialize(options)
-      unless AVAILABLE_DEPARTURE_CITIES.include?(options[:departure])
+    def initialize(configuration)
+      unless AVAILABLE_DEPARTURE_CITIES.include?(configuration[:departure])
         raise ArgumentError.new('Desired city not supported')
       end
-      @strategy  = options[:strategy] || CapybaraEngine.new
-      @departure = options[:departure]
+      @configuration = DEFAULT_CONFIGURATION.merge(configuration)
+      @strategy      = configuration[:strategy] || CapybaraEngine.new
     end
 
     def scrape
-      @strategy.scrape(url)
+      @strategy.scrape(url, configuration)
     end
 
     private
@@ -24,7 +30,7 @@ module FerriesScraper
     end
 
     def rfid
-      ROUTE_RFIDS[@departure.to_sym]
+      ROUTE_RFIDS[configuration[:departure].to_sym]
     end
   end
 end
