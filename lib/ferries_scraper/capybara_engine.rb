@@ -35,9 +35,14 @@ module FerriesScraper
       submit_form
       wait_for_results
       parse_results
+    rescue Capybara::ElementNotFound => e
+      # Notify a developer here...
+      puts "The site's HTML probably has changed: #{e}"
     end
 
     def fill_in_date
+      # Make sure the element is on the page, before we access it via JavaScript
+      find 'input[name=cal_out]'
       # Capybara's `fill_in` won't work with readonly inputs
       page.execute_script %{ document.querySelector('input[name=cal_out]').value = '#{days_in_advance_from_today(3)}'; }
     end
@@ -53,6 +58,8 @@ module FerriesScraper
     end
 
     def choose_vehicle
+      # Make sure the element is on the page, before we access it via JavaScript
+      find 'input[name="vehicleDetails$HasVehicle"]'
       # `choose 'vehicleDetails_radNoVehicle'` blows up the form when testing locally because of onclick
       page.execute_script %{ document.querySelector('input[name="vehicleDetails$HasVehicle"]').checked = true; }
     end
