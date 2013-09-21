@@ -22,7 +22,7 @@ task :scrape => ['scraped'] do |task|
     puts 'Scraping...'
     @results = scraper.scrape
     cd 'scraped'
-    file_name = "#{ENV['departure']}_#{scraper.strategy.send(:days_in_advance_from_today).gsub(/\s/, '_')}.json".downcase
+    file_name = "#{scraper.configuration[:date]}_#{scraper.configuration[:departure]}.json".downcase
     open(file_name, 'w') { |f| f << @results.to_json }
     puts "Finished! File saved as #{file_name}"
   else
